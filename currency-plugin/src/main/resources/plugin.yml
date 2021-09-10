@@ -1,0 +1,46 @@
+name: HamsterCurrency
+version: ${version}
+main: cn.hamster3.currency.HamsterCurrency
+authors: [ Hamster3 ]
+description: 仓鼠的多货币支持
+website: https://www.hamster3.cn/
+
+load: STARTUP
+api-version: "1.16"
+
+depend:
+  - HamsterAPI
+
+softdepend:
+  - HasmterService-Bukkit
+  - PlaceholderAPI
+  - PlayerPoints
+  - Vault
+
+commands:
+  HamsterCurrency:
+    aliases: [ hcurrency, currency ]
+  balance:
+    aliases: [ bal, seemoney ]
+  balanceTop:
+    aliases: [ baltop ]
+  payMoney:
+    aliases: [ pay ]
+  economy:
+    aliases: [ eco, money ]
+
+permissions:
+  currency.import:
+    default: op
+  currency.give:
+    default: op
+  currency.take:
+    default: op
+  currency.set:
+    default: op
+  currency.look:
+    default: true
+  currency.look.other:
+    default: op
+  currency.top:
+    default: op
