@@ -45,14 +45,13 @@ public class PlayerData {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     public PlayerData(ConfigurationSection config) {
         uuid = UUID.fromString(config.getString("uuid"));
         OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
         if (player.getName() != null) {
             playerName = player.getName();
         } else {
-            playerName = config.getString("playerName");
+            playerName = config.getString("playerName").replace("\\'", "'");
         }
         playerCurrencies = new HashMap<>();
         ConfigurationSection playerCurrenciesConfig = config.getConfigurationSection("playerCurrencies");
@@ -64,7 +63,7 @@ public class PlayerData {
     public JsonObject saveToJson() {
         JsonObject object = new JsonObject();
         object.addProperty("uuid", uuid.toString());
-        object.addProperty("playerName", playerName);
+        object.addProperty("playerName", playerName.replace("'", "\\'"));
         JsonObject playerCurrenciesJson = new JsonObject();
         for (Map.Entry<String, Double> entry : playerCurrencies.entrySet()) {
             playerCurrenciesJson.addProperty(entry.getKey(), entry.getValue());
