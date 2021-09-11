@@ -28,7 +28,6 @@ public class SQLDataManager implements IDataManager {
     private final HashSet<PlayerData> playerData;
     private final HashSet<CurrencyType> currencyTypes;
 
-    @SuppressWarnings("ConstantConditions")
     public SQLDataManager(HamsterCurrency plugin) throws SQLException, ClassNotFoundException {
         this.plugin = plugin;
         parser = new JsonParser();
@@ -40,11 +39,11 @@ public class SQLDataManager implements IDataManager {
         statement.execute("CREATE TABLE IF NOT EXISTS hamster_currency_player_data(" +
                 "uuid VARCHAR(36) PRIMARY KEY," +
                 "data TEXT" +
-                ");");
+                ") CHARACTER SET = utf8mb4;");
         statement.execute("CREATE TABLE IF NOT EXISTS hamster_currency_settings(" +
                 "title VARCHAR(64) PRIMARY KEY," +
                 "data TEXT" +
-                ");");
+                ") CHARACTER SET = utf8mb4;");
 
         statement.close();
     }
@@ -69,7 +68,7 @@ public class SQLDataManager implements IDataManager {
             getLogUtils().error(e, "插件上传 pluginConfig 至数据库时遇到了一个异常: ");
         }
         loadConfig(config);
-        ServiceMessageAPI.sendMessage("HamsterCurrency", "uploadConfigToSQL");
+        ServiceMessageAPI.sendServiceMessage("HamsterCurrency", "uploadConfigToSQL");
     }
 
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
@@ -100,7 +99,6 @@ public class SQLDataManager implements IDataManager {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void loadConfig(FileConfiguration config) {
         getLogUtils().info("加载配置文件...");
         currencyTypes.clear();
@@ -154,7 +152,7 @@ public class SQLDataManager implements IDataManager {
                             data.saveToJson().toString()
                     ));
                     getLogUtils().info("已保存玩家 %s 的存档数据.", data.getUuid());
-                    ServiceMessageAPI.sendMessage("HamsterCurrency", "savedPlayerData", data.getUuid().toString());
+                    ServiceMessageAPI.sendServiceMessage("HamsterCurrency", "savedPlayerData", data.getUuid().toString());
                 }
                 statement.close();
             } catch (SQLException e) {
@@ -207,7 +205,7 @@ public class SQLDataManager implements IDataManager {
 
     @Override
     public void reloadConfig() {
-        ServiceMessageAPI.sendMessage("HamsterCurrency", "reload");
+        ServiceMessageAPI.sendServiceMessage("HamsterCurrency", "reload");
     }
 
     @Override
@@ -260,7 +258,7 @@ public class SQLDataManager implements IDataManager {
                         getLogUtils().error(e, "保存玩家 %s 的存档数据时出错!", data.getUuid());
                     }
                     getLogUtils().info("已保存玩家 %s 的存档数据.", data.getUuid());
-                    ServiceMessageAPI.sendMessage(
+                    ServiceMessageAPI.sendServiceMessage(
                             "HamsterCurrency",
                             "savedPlayerData",
                             data.getUuid().toString()
