@@ -12,7 +12,6 @@ repositories {
 }
 
 configurations {
-
     implementationShade
     implementation.extendsFrom implementationShade
 }

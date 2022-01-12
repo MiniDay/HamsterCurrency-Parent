@@ -2,6 +2,7 @@ package cn.hamster3.currency.command;
 
 import cn.hamster3.api.command.CommandExecutor;
 import cn.hamster3.currency.core.IDataManager;
+import cn.hamster3.currency.core.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -11,13 +12,18 @@ public class ReloadCommand extends CommandExecutor {
     private final IDataManager dataManager;
 
     public ReloadCommand(IDataManager dataManager) {
-        super("reload", "重载服务器");
+        super("reload", "重载服务器", "currency.reload");
         this.dataManager = dataManager;
     }
 
     @Override
     public boolean isPlayerCommand() {
         return false;
+    }
+
+    @Override
+    public String getPermissionMessage() {
+        return Message.notHasPermission.toString();
     }
 
     @Override

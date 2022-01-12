@@ -38,6 +38,8 @@ permissions:
     default: op
   currency.set:
     default: op
+  currency.reload:
+    default: op
   currency.look:
     default: true
   currency.look.other:
