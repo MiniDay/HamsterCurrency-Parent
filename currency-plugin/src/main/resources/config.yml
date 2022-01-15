@@ -5,11 +5,11 @@ useBC: true
 
 # 若开启跨服模式，则需要配置datasource
 datasource:
-  driver: "com.mysql.jdbc.Driver"
+  driver: "com.mysql.cj.jdbc.Driver"
   url: "jdbc:mysql://test3.hamster3.cn:3306?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false"
   user: Test
   password: Test123..
-  database: Test
+  database: Test1
   # 是否将这个服务器的配置文件设为模板
   # 若设为true，config将会在服务器启动时自动上传至数据库
   # 其他template为false的服务器将会在启动和重载时自动从数据库上下载config

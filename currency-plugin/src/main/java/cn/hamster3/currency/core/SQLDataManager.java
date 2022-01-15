@@ -1,11 +1,12 @@
 package cn.hamster3.currency.core;
 
-import cn.hamster3.api.HamsterAPI;
 import cn.hamster3.currency.HamsterCurrency;
 import cn.hamster3.currency.data.CurrencyType;
 import cn.hamster3.currency.data.PlayerData;
 import cn.hamster3.service.bukkit.api.ServiceMessageAPI;
 import com.google.gson.JsonParser;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -22,9 +23,12 @@ import java.util.*;
 import static cn.hamster3.currency.HamsterCurrency.getLogUtils;
 
 public class SQLDataManager implements IDataManager {
-    private final JsonParser parser;
-    private final Connection connection;
     private final HamsterCurrency plugin;
+    private final JsonParser parser;
+
+    private final String database;
+    private final HikariDataSource dataSource;
+
     private final HashSet<PlayerData> playerData;
     private final HashSet<CurrencyType> currencyTypes;
 
@@ -34,18 +38,32 @@ public class SQLDataManager implements IDataManager {
         playerData = new HashSet<>();
         currencyTypes = new HashSet<>();
 
-        connection = HamsterAPI.getSQLConnection(FileManager.getPluginConfig().getConfigurationSection("datasource"));
+        ConfigurationSection datasourceConfig = FileManager.getPluginConfig().getConfigurationSection("datasource");
+        database = datasourceConfig.getString("database");
+        HikariConfig hikariConfig = new HikariConfig();
+
+        hikariConfig.setDriverClassName(datasourceConfig.getString("driver"));
+        hikariConfig.setJdbcUrl(datasourceConfig.getString("url"));
+        hikariConfig.setUsername(datasourceConfig.getString("user"));
+        hikariConfig.setPassword(datasourceConfig.getString("password"));
+
+        hikariConfig.setMaximumPoolSize(10);
+        hikariConfig.setMinimumIdle(1);
+
+        dataSource = new HikariDataSource(hikariConfig);
+        Connection connection = dataSource.getConnection();
         Statement statement = connection.createStatement();
-        statement.execute("CREATE TABLE IF NOT EXISTS hamster_currency_player_data(" +
+        statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_player_data(" +
                 "uuid VARCHAR(36) PRIMARY KEY," +
                 "data TEXT" +
                 ") CHARACTER SET = utf8mb4;");
-        statement.execute("CREATE TABLE IF NOT EXISTS hamster_currency_settings(" +
+        statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_settings(" +
                 "title VARCHAR(64) PRIMARY KEY," +
                 "data TEXT" +
                 ") CHARACTER SET = utf8mb4;");
 
         statement.close();
+        connection.close();
     }
 
     public void uploadConfigToSQL() {
@@ -55,14 +73,16 @@ public class SQLDataManager implements IDataManager {
         getLogUtils().info("配置文件重载完成!");
         try {
             getLogUtils().info("将配置文件上传至数据库...");
+            Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
             String data = Base64.getEncoder().encodeToString(config.saveToString().getBytes(StandardCharsets.UTF_8));
             statement.executeUpdate(String.format(
-                    "REPLACE INTO hamster_currency_settings VALUES('%s', '%s');",
+                    "REPLACE INTO " + database + ".hamster_currency_settings VALUES('%s', '%s');",
                     "pluginConfig",
                     data
             ));
             statement.close();
+            connection.close();
             getLogUtils().info("配置文件上传完成!");
         } catch (SQLException e) {
             getLogUtils().error(e, "插件上传 pluginConfig 至数据库时遇到了一个异常: ");
@@ -75,8 +95,9 @@ public class SQLDataManager implements IDataManager {
     public void loadConfigFromSQL() {
         try {
             getLogUtils().info("从数据库中下载配置文件...");
+            Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet set = statement.executeQuery("SELECT * FROM hamster_currency_settings;");
+            ResultSet set = statement.executeQuery("SELECT * FROM " + database + ".hamster_currency_settings;");
             while (set.next()) {
                 String title = set.getString("title");
                 String data = new String(Base64.getDecoder().decode(set.getString("data")), StandardCharsets.UTF_8);
@@ -93,6 +114,7 @@ public class SQLDataManager implements IDataManager {
                 }
             }
             statement.close();
+            connection.close();
             getLogUtils().info("配置文件下载完成!");
         } catch (SQLException e) {
             getLogUtils().error(e, "插件从数据库中下载 pluginConfig 时遇到了一个异常: ");
@@ -125,6 +147,7 @@ public class SQLDataManager implements IDataManager {
             getLogUtils().info("玩家经济列名: %s", moneyCol);
             getLogUtils().info("导入至经济类型: %s", currencyType);
             try {
+                Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet set = statement.executeQuery(String.format("SELECT * FROM %s.%s;", database, table));
                 synchronized (playerData) {
@@ -147,7 +170,7 @@ public class SQLDataManager implements IDataManager {
                 }
                 for (PlayerData data : playerData) {
                     statement.executeUpdate(String.format(
-                            "REPLACE INTO hamster_currency_player_data VALUES('%s', '%s');",
+                            "REPLACE INTO " + database + ".hamster_currency_player_data VALUES('%s', '%s');",
                             data.getUuid().toString(),
                             data.saveToJson().toString()
                     ));
@@ -155,6 +178,7 @@ public class SQLDataManager implements IDataManager {
                     ServiceMessageAPI.sendServiceMessage("HamsterCurrency", "savedPlayerData", data.getUuid().toString());
                 }
                 statement.close();
+                connection.close();
             } catch (SQLException e) {
                 getLogUtils().error(e, "从其他插件中导入数据时发生了一个异常:");
             }
@@ -165,8 +189,9 @@ public class SQLDataManager implements IDataManager {
     public void onEnable() {
         getLogUtils().info("从数据库中读取玩家数据...");
         try {
+            Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet set = statement.executeQuery("SELECT * FROM hamster_currency_player_data;");
+            ResultSet set = statement.executeQuery("SELECT * FROM " + database + ".hamster_currency_player_data;");
             synchronized (playerData) {
                 while (set.next()) {
                     String uuid = set.getString("uuid");
@@ -181,6 +206,7 @@ public class SQLDataManager implements IDataManager {
             }
             set.close();
             statement.close();
+            connection.close();
         } catch (SQLException e) {
             getLogUtils().error(e, "从数据库中读取玩家数据时出现了一个异常:");
         }
@@ -211,9 +237,10 @@ public class SQLDataManager implements IDataManager {
     @Override
     public void loadPlayerData(UUID uuid) {
         try {
+            Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
             ResultSet set = statement.executeQuery(String.format(
-                    "SELECT * FROM hamster_currency_player_data WHERE uuid='%s';",
+                    "SELECT * FROM " + database + ".hamster_currency_player_data WHERE uuid='%s';",
                     uuid
             ));
             PlayerData data;
@@ -236,6 +263,7 @@ public class SQLDataManager implements IDataManager {
             }
             set.close();
             statement.close();
+            connection.close();
             getLogUtils().info("已加载玩家 %s 的存档数据.", data.getUuid());
         } catch (SQLException e) {
             getLogUtils().error(e, "加载玩家 %s 的存档数据时出错!", uuid);
@@ -244,26 +272,27 @@ public class SQLDataManager implements IDataManager {
 
     @Override
     public void savePlayerData(PlayerData data) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin,
-                () -> {
-                    try {
-                        Statement statement = connection.createStatement();
-                        statement.executeUpdate(String.format(
-                                "REPLACE INTO hamster_currency_player_data VALUES('%s', '%s');",
-                                data.getUuid().toString(),
-                                data.saveToJson().toString()
-                        ));
-                        statement.close();
-                    } catch (SQLException e) {
-                        getLogUtils().error(e, "保存玩家 %s 的存档数据时出错!", data.getUuid());
-                    }
-                    getLogUtils().info("已保存玩家 %s 的存档数据.", data.getUuid());
-                    ServiceMessageAPI.sendServiceMessage(
-                            "HamsterCurrency",
-                            "savedPlayerData",
-                            data.getUuid().toString()
-                    );
-                });
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                statement.executeUpdate(String.format(
+                        "REPLACE INTO " + database + ".hamster_currency_player_data VALUES('%s', '%s');",
+                        data.getUuid().toString(),
+                        data.saveToJson().toString()
+                ));
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                getLogUtils().error(e, "保存玩家 %s 的存档数据时出错!", data.getUuid());
+            }
+            getLogUtils().info("已保存玩家 %s 的存档数据.", data.getUuid());
+            ServiceMessageAPI.sendServiceMessage(
+                    "HamsterCurrency",
+                    "savedPlayerData",
+                    data.getUuid().toString()
+            );
+        });
     }
 
     @Override
