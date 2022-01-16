@@ -1,4 +1,4 @@
-# HamsterCurrency
+# [HamsterCurrency](https://github.com/MiniDay/HamsterCurrency-Parent)
 
 [![](https://jitpack.io/v/cn.hamster3/HamsterCurrency.svg)](https://jitpack.io/#cn.hamster3/HamsterCurrency)  
 仓鼠的多货币经济插件
@@ -21,8 +21,8 @@
 ```xml
 <repositories>
     <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
+        <id>airgame-repo</id>
+        <url>https://maven.airgame.net/repository/maven-repo/</url>
     </repository>
 </repositories>
 ```
@@ -33,7 +33,7 @@
 <dependency>
     <groupId>cn.hamster3</groupId>
     <artifactId>HamsterCurrency</artifactId>
-    <version>2.0.7-SNAPSHOT</version>
+    <version>2.0.9-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -44,7 +44,7 @@
 ```groovy
 allprojects {
     repositories {
-        maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.airgame.net/repository/maven-repo/' }
     }
 }
 ```
@@ -53,7 +53,7 @@ allprojects {
 
 ```groovy
 dependencies {
-    implementation 'cn.hamster3:HamsterCurrency:1.3.7-SNAPSHOT'
+    implementation 'cn.hamster3:HamsterCurrency:2.0.9-SNAPSHOT'
 }
 ```
 

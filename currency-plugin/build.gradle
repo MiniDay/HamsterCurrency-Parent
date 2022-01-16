@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'maven-publish'
 }
 
 group 'cn.hamster3'
@@ -34,9 +35,54 @@ processResources {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+    withJavadocJar()
+    withSourcesJar()
 }
 
 jar {
     archivesBaseName = "HamsterCurrency"
     destinationDir(rootProject.buildDir)
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << "-Xlint:unchecked"
+}
+
+javadoc {
+    options.quiet()
+    options.encoding = 'UTF-8'
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.links = [
+            "https://javadoc.io/doc/org.jetbrains/annotations/21.0.1",
+            'https://javadoc.io/doc/com.google.code.gson/gson/2.8.0',
+            'https://ci.dmulloy2.net/job/ProtocolLib/javadoc',
+            'http://milkbowl.github.io/VaultAPI',
+            'https://bukkit.windit.net/javadoc'
+    ]
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = "HamsterCurrency"
+            artifact jar
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+
+    repositories {
+        maven {
+            def releasesRepoUrl = 'https://maven.airgame.net/repository/maven-releases/'
+            def snapshotsRepoUrl = 'https://maven.airgame.net/repository/maven-snapshots/'
+
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+            credentials {
+                username maven_username
+                password maven_password
+            }
+        }
+    }
 }
