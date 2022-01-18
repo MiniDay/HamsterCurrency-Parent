@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * 当 currencyID 为 PlayerPoints 且服务器安装了点券插件时，会自动更改为 PlayerPoints 接口
  */
-@SuppressWarnings({"unused", "ConstantConditions"})
+@SuppressWarnings("unused")
 public abstract class CurrencyAPI {
     private static IDataManager dataManager;
 
