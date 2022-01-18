@@ -6,7 +6,7 @@ useBC: true
 # 若开启跨服模式，则需要配置datasource
 datasource:
   driver: "com.mysql.cj.jdbc.Driver"
-  url: "jdbc:mysql://test3.hamster3.cn:3306?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false"
+  url: "jdbc:mysql://sql.hamster3.cn:3306?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false"
   user: Test
   password: Test123..
   database: Test1
