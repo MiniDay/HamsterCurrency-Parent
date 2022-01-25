@@ -1,4 +1,5 @@
 rootProject.name = 'HamsterCurrency-Parent'
 include 'currency-plugin'
 include 'transform-essentials'
+include 'transform-CMI'
 

@@ -49,7 +49,6 @@ public class Main {
         System.out.println("加载 MySQL 数据库驱动...");
         Class.forName("com.mysql.cj.jdbc.Driver");
         System.out.println("建立 MySQL 数据库连接...");
-
         Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://" + host + ":" + port + "?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false",
                 user,
