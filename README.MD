@@ -10,12 +10,6 @@
 - [Vault](https://www.spigotmc.org/resources/vault.34315/) （仅开启Vault经济系统时需要）
 - [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) (非必须)
 
-# 从其他插件导入
-
-## CMI
-
-
-
 # 开发者
 
 ## 依赖导入
