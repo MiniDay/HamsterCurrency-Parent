@@ -40,7 +40,7 @@ public class Main {
         System.out.println("建立 sqlite 数据库连接...");
         Connection connection = DriverManager.getConnection("jdbc:sqlite://" + database.getAbsolutePath());
         Statement statement = connection.createStatement();
-        ResultSet set = statement.executeQuery("SELECT player_uuid, username, Balance FROM users;");
+        ResultSet set = statement.executeQuery("SELECT player_uuid, username, Balance FROM main.users;");
         while (set.next()) {
             try {
                 UUID uuid = UUID.fromString(set.getString("player_uuid"));
@@ -48,7 +48,10 @@ public class Main {
                 PlayerData data = getPlayerData(uuid, username);
                 double balance = set.getDouble("Balance");
                 if (data.getPlayerCurrency("金币") >= balance) {
-                    return;
+                    System.out.printf("跳过 %s(%s) 的存档: %.2f >= %.2f金币%n", uuid, username,
+                            data.getPlayerCurrency("金币"),
+                            balance);
+                    continue;
                 }
                 data.setPlayerCurrency("金币", balance);
                 System.out.printf("已加载 %s(%s) 的存档: %.2f金币%n", uuid, username, balance);
