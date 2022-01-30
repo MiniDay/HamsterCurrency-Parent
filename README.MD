@@ -10,6 +10,12 @@
 - [Vault](https://www.spigotmc.org/resources/vault.34315/) （仅开启Vault经济系统时需要）
 - [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) (非必须)
 
+# 变量列表
+
+| 变量               | 描述      |
+|:-----------------|:--------|
+| %Currency_<货币名称% | 玩家的货币余额 |
+
 # 开发者
 
 ## 依赖导入
@@ -19,6 +25,7 @@
 添加仓库:
 
 ```xml
+
 <repositories>
     <repository>
         <id>airgame-repo</id>
@@ -30,6 +37,7 @@
 添加导入:
 
 ```xml
+
 <dependency>
     <groupId>cn.hamster3</groupId>
     <artifactId>HamsterCurrency</artifactId>
