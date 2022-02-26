@@ -40,9 +40,9 @@ permissions:
     default: op
   currency.reload:
     default: op
-  currency.look:
+  currency.see:
     default: true
-  currency.look.other:
+  currency.see.other:
     default: op
   currency.top:
     default: op
