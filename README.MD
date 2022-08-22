@@ -29,7 +29,7 @@
 <repositories>
     <repository>
         <id>airgame-repo</id>
-        <url>https://maven.airgame.net/repository/maven-repo/</url>
+        <url>https://maven.airgame.net/maven-repo/</url>
     </repository>
 </repositories>
 ```
@@ -52,7 +52,7 @@
 ```groovy
 allprojects {
     repositories {
-        maven { url 'https://maven.airgame.net/repository/maven-repo/' }
+        maven { url 'https://maven.airgame.net/maven-repo/' }
     }
 }
 ```

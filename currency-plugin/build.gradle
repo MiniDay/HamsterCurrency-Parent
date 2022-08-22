@@ -4,11 +4,11 @@ plugins {
 }
 
 group 'cn.hamster3'
-version '2.0.10-SNAPSHOT'
+version '2.0.11-SNAPSHOT'
 
 repositories {
     maven {
-        url = "https://maven.airgame.net/repository/maven-public/"
+        url = "https://maven.airgame.net/maven-public/"
     }
     maven {
         url = "https://repo.codemc.org/repository/maven-public"
@@ -19,10 +19,12 @@ dependencies {
     compileOnly "org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT"
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '22.0.0'
-    compileOnly "cn.hamster3:HamsterService-Bukkit:2.6.2-SNAPSHOT"
+    compileOnly "cn.hamster3:HamsterService-Bukkit:2.8.0-SNAPSHOT"
     compileOnly "cn.hamster3:HamsterAPI:2.4.7-SNAPSHOT"
-    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
-    compileOnly "org.black_ixx:PlayerPoints:2.1.3"
+    compileOnly 'net.milkbowl.vault:VaultAPI:1.7'
+    compileOnly("org.black_ixx:PlayerPoints:2.1.3") {
+        exclude group: "*"
+    }
     compileOnly "me.clip:placeholderapi:2.10.9"
 }
 
@@ -74,8 +76,8 @@ publishing {
 
     repositories {
         maven {
-            def releasesRepoUrl = 'https://maven.airgame.net/repository/maven-releases/'
-            def snapshotsRepoUrl = 'https://maven.airgame.net/repository/maven-snapshots/'
+            def releasesRepoUrl = 'https://maven.airgame.net/maven-releases/'
+            def snapshotsRepoUrl = 'https://maven.airgame.net/maven-snapshots/'
 
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
 
