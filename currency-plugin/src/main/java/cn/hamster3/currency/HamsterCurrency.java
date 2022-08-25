@@ -86,8 +86,8 @@ public final class HamsterCurrency extends JavaPlugin {
         logUtils.info("事件监听器已注册!");
 
         registerVault();
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            logUtils.info("检测到 PlaceholderAPI 已启动...");
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            logUtils.info("检测到 PlaceholderAPI 已安装...");
             new PlaceholderHook(dataManager).register();
             logUtils.info("已挂载 PlaceholderAPI 变量!");
         } else {

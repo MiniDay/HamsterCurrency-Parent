@@ -12,7 +12,7 @@ depend:
   - HamsterAPI
 
 softdepend:
-  - HasmterService-Bukkit
+  - HamsterService-Bukkit
   - PlaceholderAPI
   - PlayerPoints
   - Vault
