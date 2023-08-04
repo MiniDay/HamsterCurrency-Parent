@@ -33,7 +33,7 @@ public class PlayerData {
         uuid = UUID.fromString(object.get("uuid").getAsString());
         if (object.has("playerName")) {
             playerName = object.get("playerName").getAsString();
-        }else {
+        } else {
             playerName = ServiceInfoAPI.getPlayerInfo(uuid).getPlayerName();
         }
 

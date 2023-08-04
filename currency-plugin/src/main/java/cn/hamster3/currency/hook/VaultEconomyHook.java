@@ -3,6 +3,7 @@ package cn.hamster3.currency.hook;
 import cn.hamster3.currency.core.FileManager;
 import cn.hamster3.currency.core.IDataManager;
 import cn.hamster3.currency.core.Message;
+import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.PlayerData;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -30,11 +31,13 @@ public class VaultEconomyHook extends AbstractEconomy {
             return new EconomyResponse(amount, 0, EconomyResponse.ResponseType.FAILURE, "玩家账户不存在");
         }
         String type = FileManager.getVaultCurrencyType();
-        if (data.getPlayerCurrency(type) > 0 && data.getPlayerCurrency(type) + amount < 0) {
+        double balance = data.getPlayerCurrency(type) + amount;
+        if (data.getPlayerCurrency(type) > 0 && balance < 0) {
             return new EconomyResponse(amount, 0, EconomyResponse.ResponseType.FAILURE, "玩家金额超出上限");
         }
-        data.setPlayerCurrency(type, data.getPlayerCurrency(type) + amount);
+        data.setPlayerCurrency(type, balance);
         dataManager.savePlayerData(data);
+        dataManager.insertLog(new CurrencyLog(data.getUuid(), type, "add", amount, balance));
         return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.SUCCESS, "");
     }
 
@@ -46,8 +49,10 @@ public class VaultEconomyHook extends AbstractEconomy {
         if (data.getPlayerCurrency(type) < amount) {
             return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.FAILURE, "余额不足");
         }
-        data.setPlayerCurrency(type, data.getPlayerCurrency(type) - amount);
+        double balance = data.getPlayerCurrency(type) - amount;
+        data.setPlayerCurrency(type, balance);
         dataManager.savePlayerData(data);
+        dataManager.insertLog(new CurrencyLog(data.getUuid(), type, "take", amount, balance));
         return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.SUCCESS, "扣款成功");
     }
 

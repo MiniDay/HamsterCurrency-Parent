@@ -38,8 +38,8 @@ public final class HamsterCurrency extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        FileManager.reload(this);
         logUtils = new LogUtils(this);
+        FileManager.reload(this);
         logUtils.infoDividingLine();
         if (FileManager.isUseBC()) {
             logUtils.info("使用多服务器模式...");

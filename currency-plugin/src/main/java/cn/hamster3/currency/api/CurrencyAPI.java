@@ -1,6 +1,7 @@
 package cn.hamster3.currency.api;
 
 import cn.hamster3.currency.core.IDataManager;
+import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.CurrencyType;
 import cn.hamster3.currency.data.PlayerData;
 import org.black_ixx.playerpoints.PlayerPoints;
@@ -42,6 +43,7 @@ public abstract class CurrencyAPI {
         }
         data.setPlayerCurrency(currencyID, amount);
         dataManager.savePlayerData(data);
+        dataManager.insertLog(new CurrencyLog(uuid, currencyID, "set", amount, amount));
     }
 
     public static void addPlayerCurrency(UUID uuid, String currencyID, double amount) {
@@ -53,8 +55,10 @@ public abstract class CurrencyAPI {
         if (data == null) {
             return;
         }
-        data.setPlayerCurrency(currencyID, data.getPlayerCurrency(currencyID) + amount);
+        double balance = data.getPlayerCurrency(currencyID) + amount;
+        data.setPlayerCurrency(currencyID, balance);
         dataManager.savePlayerData(data);
+        dataManager.insertLog(new CurrencyLog(uuid, currencyID, "add", amount, balance));
     }
 
     public static void takePlayerCurrency(UUID uuid, String currencyID, double amount) {
@@ -66,8 +70,10 @@ public abstract class CurrencyAPI {
         if (data == null) {
             return;
         }
-        data.setPlayerCurrency(currencyID, data.getPlayerCurrency(currencyID) - amount);
+        double balance = data.getPlayerCurrency(currencyID) - amount;
+        data.setPlayerCurrency(currencyID, balance);
         dataManager.savePlayerData(data);
+        dataManager.insertLog(new CurrencyLog(uuid, currencyID, "take", amount, balance));
     }
 
     public static boolean hasPlayerCurrency(UUID uuid, String currencyID, double amount) {

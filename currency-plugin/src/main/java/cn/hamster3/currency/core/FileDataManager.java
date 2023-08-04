@@ -1,6 +1,7 @@
 package cn.hamster3.currency.core;
 
 import cn.hamster3.currency.HamsterCurrency;
+import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.CurrencyType;
 import cn.hamster3.currency.data.PlayerData;
 import org.bukkit.configuration.ConfigurationSection;
@@ -107,6 +108,10 @@ public class FileDataManager implements IDataManager {
         // 每一次修改存档都保存至磁盘一次会极大地浪费服务器性能
         // 按照插件架构，我们只需要在关服的时候保存所有玩家的存档即可
         // 所以这里什么都不做
+    }
+
+    @Override
+    public void insertLog(CurrencyLog log) {
     }
 
     @Override

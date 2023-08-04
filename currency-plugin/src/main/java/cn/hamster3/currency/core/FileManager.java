@@ -37,8 +37,7 @@ public abstract class FileManager {
             try {
                 Message.valueOf(key).setMessage(HamsterAPI.replaceColorCode(messagesConfig.getString(key)));
             } catch (IllegalArgumentException e) {
-                HamsterCurrency.getLogUtils().warning("初始化消息设置 %s 时发生了一个异常: ", key);
-                e.printStackTrace();
+                HamsterCurrency.getLogUtils().error(e, "初始化消息设置 %s 时发生了一个异常: ", key);
             }
         }
     }

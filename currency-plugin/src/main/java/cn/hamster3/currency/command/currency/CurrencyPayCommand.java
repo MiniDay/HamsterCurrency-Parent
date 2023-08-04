@@ -5,6 +5,7 @@ import cn.hamster3.api.command.CommandExecutor;
 import cn.hamster3.currency.core.FileManager;
 import cn.hamster3.currency.core.IDataManager;
 import cn.hamster3.currency.core.Message;
+import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.CurrencyType;
 import cn.hamster3.currency.data.PlayerData;
 import cn.hamster3.service.bukkit.api.ServiceMessageAPI;
@@ -25,11 +26,7 @@ public class CurrencyPayCommand extends CommandExecutor {
                 "向其他玩家转账",
                 "currency.pay",
                 Message.notHasPermission.toString(),
-                new String[]{
-                        "玩家",
-                        "货币类型",
-                        "数额"
-                }
+                new String[]{"玩家", "货币类型", "数额"}
         );
         this.dataManager = dataManager;
     }
@@ -88,10 +85,14 @@ public class CurrencyPayCommand extends CommandExecutor {
             );
             return true;
         }
-        fromData.setPlayerCurrency(type.getId(), fromData.getPlayerCurrency(type.getId()) - amount);
-        toData.setPlayerCurrency(type.getId(), toData.getPlayerCurrency(type.getId()) + amount);
+        double fromBalance = fromData.getPlayerCurrency(type.getId()) - amount;
+        fromData.setPlayerCurrency(type.getId(), fromBalance);
+        double toBalance = toData.getPlayerCurrency(type.getId()) + amount;
+        toData.setPlayerCurrency(type.getId(), toBalance);
         dataManager.savePlayerData(fromData);
         dataManager.savePlayerData(toData);
+        dataManager.insertLog(new CurrencyLog(fromData.getUuid(), type.getId(), "payOut", amount, fromBalance));
+        dataManager.insertLog(new CurrencyLog(toData.getUuid(), type.getId(), "payIn", amount, toBalance));
         sender.sendMessage(
                 Message.paySuccess.toString()
                         .replace("%player%", toData.getPlayerName())

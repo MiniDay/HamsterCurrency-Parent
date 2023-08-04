@@ -1,6 +1,7 @@
 package cn.hamster3.currency.command.vault;
 
 import cn.hamster3.currency.core.IDataManager;
+import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.CurrencyType;
 import cn.hamster3.currency.data.PlayerData;
 
@@ -16,7 +17,8 @@ public class VaultGiveCommand extends VaultAdminSetCommand {
 
     @Override
     public void doSet(PlayerData data, CurrencyType type, double amount) {
-        data.setPlayerCurrency(type.getId(), data.getPlayerCurrency(type.getId()) + amount);
-
+        double balance = data.getPlayerCurrency(type.getId()) + amount;
+        data.setPlayerCurrency(type.getId(), balance);
+        dataManager.insertLog(new CurrencyLog(data.getUuid(), type.getId(), "add", amount, balance));
     }
 }

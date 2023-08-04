@@ -1,5 +1,6 @@
 package cn.hamster3.currency.core;
 
+import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.CurrencyType;
 import cn.hamster3.currency.data.PlayerData;
 
@@ -41,6 +42,8 @@ public interface IDataManager {
      * @param data -
      */
     void savePlayerData(PlayerData data);
+
+    void insertLog(CurrencyLog log);
 
     PlayerData getPlayerData(UUID uuid);
 

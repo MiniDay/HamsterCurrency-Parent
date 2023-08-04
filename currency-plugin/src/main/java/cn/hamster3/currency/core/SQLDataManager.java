@@ -1,6 +1,7 @@
 package cn.hamster3.currency.core;
 
 import cn.hamster3.currency.HamsterCurrency;
+import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.CurrencyType;
 import cn.hamster3.currency.data.PlayerData;
 import cn.hamster3.service.bukkit.api.ServiceMessageAPI;
@@ -14,10 +15,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 import static cn.hamster3.currency.HamsterCurrency.getLogUtils;
@@ -56,6 +54,15 @@ public class SQLDataManager implements IDataManager {
         statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_player_data(" +
                 "uuid VARCHAR(36) PRIMARY KEY," +
                 "data TEXT" +
+                ") CHARACTER SET = utf8mb4;");
+        statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_logs(" +
+                "uuid VARCHAR(36) NOT NULL," +
+                "type VARCHAR(36) NOT NULL," +
+                "action VARCHAR(36) NOT NULL," +
+                "amount DOUBLE NOT NULL," +
+                "balance DOUBLE NOT NULL," +
+                "time DATETIME NOT NULL DEFAULT NOW()," +
+                "INDEX idx_uuid(uuid)" +
                 ") CHARACTER SET = utf8mb4;");
         statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_settings(" +
                 "title VARCHAR(64) PRIMARY KEY," +
@@ -292,6 +299,26 @@ public class SQLDataManager implements IDataManager {
                     "savedPlayerData",
                     data.getUuid().toString()
             );
+        });
+    }
+
+    @Override
+    public void insertLog(CurrencyLog log) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try (Connection connection = dataSource.getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement(
+                        "INSERT INTO " + database + ".hamster_currency_logs VALUES(?, ?, ?, ?, ?, DEFAULT);"
+                )) {
+                    statement.setString(1, log.getUuid().toString());
+                    statement.setString(2, log.getType());
+                    statement.setString(3, log.getAction());
+                    statement.setDouble(4, log.getAmount());
+                    statement.setDouble(5, log.getBalance());
+                    statement.executeUpdate();
+                }
+            } catch (SQLException e) {
+                getLogUtils().error(e);
+            }
         });
     }
 
