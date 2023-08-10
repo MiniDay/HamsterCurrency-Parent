@@ -19,6 +19,6 @@ public class VaultTakeCommand extends VaultAdminSetCommand {
     public void doSet(PlayerData data, CurrencyType type, double amount) {
         double balance = data.getPlayerCurrency(type.getId()) - amount;
         data.setPlayerCurrency(type.getId(), balance);
-        dataManager.insertLog(new CurrencyLog(data.getUuid(), type.getId(), "take", amount, balance));
+        dataManager.insertLog(new CurrencyLog(data.getUuid(), data.getPlayerName(), type.getId(), "take", amount, balance));
     }
 }

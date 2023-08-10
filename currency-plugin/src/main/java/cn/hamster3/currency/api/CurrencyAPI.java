@@ -43,7 +43,7 @@ public abstract class CurrencyAPI {
         }
         data.setPlayerCurrency(currencyID, amount);
         dataManager.savePlayerData(data);
-        dataManager.insertLog(new CurrencyLog(uuid, currencyID, "set", amount, amount));
+        dataManager.insertLog(new CurrencyLog(uuid, data.getPlayerName(), currencyID, "set", amount, amount));
     }
 
     public static void addPlayerCurrency(UUID uuid, String currencyID, double amount) {
@@ -58,7 +58,7 @@ public abstract class CurrencyAPI {
         double balance = data.getPlayerCurrency(currencyID) + amount;
         data.setPlayerCurrency(currencyID, balance);
         dataManager.savePlayerData(data);
-        dataManager.insertLog(new CurrencyLog(uuid, currencyID, "add", amount, balance));
+        dataManager.insertLog(new CurrencyLog(uuid, data.getPlayerName(), currencyID, "add", amount, balance));
     }
 
     public static void takePlayerCurrency(UUID uuid, String currencyID, double amount) {
@@ -73,7 +73,7 @@ public abstract class CurrencyAPI {
         double balance = data.getPlayerCurrency(currencyID) - amount;
         data.setPlayerCurrency(currencyID, balance);
         dataManager.savePlayerData(data);
-        dataManager.insertLog(new CurrencyLog(uuid, currencyID, "take", amount, balance));
+        dataManager.insertLog(new CurrencyLog(uuid, data.getPlayerName(), currencyID, "take", amount, balance));
     }
 
     public static boolean hasPlayerCurrency(UUID uuid, String currencyID, double amount) {

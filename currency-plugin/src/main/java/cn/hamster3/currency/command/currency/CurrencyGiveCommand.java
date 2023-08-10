@@ -19,7 +19,7 @@ public class CurrencyGiveCommand extends CurrencyAdminSetCommand {
     protected void doSet(PlayerData data, CurrencyType type, double amount) {
         double balance = data.getPlayerCurrency(type.getId()) + amount;
         data.setPlayerCurrency(type.getId(), balance);
-        dataManager.insertLog(new CurrencyLog(data.getUuid(), type.getId(), "add", amount, balance));
+        dataManager.insertLog(new CurrencyLog(data.getUuid(), data.getPlayerName(), type.getId(), "add", amount, balance));
     }
 
 }

@@ -7,6 +7,8 @@ import java.util.UUID;
 public class CurrencyLog {
     @NotNull
     private final UUID uuid;
+    @NotNull
+    private final String playerName;
     /**
      * 货币类型
      */
@@ -26,26 +28,28 @@ public class CurrencyLog {
      */
     private final double balance;
 
-    public CurrencyLog(@NotNull UUID uuid, @NotNull String type, @NotNull String action, double amount, double balance) {
+    public CurrencyLog(@NotNull UUID uuid, @NotNull String playerName, @NotNull String type, @NotNull String action, double amount, double balance) {
         this.uuid = uuid;
+        this.playerName = playerName;
         this.type = type;
         this.action = action;
         this.amount = amount;
         this.balance = balance;
     }
 
-    @NotNull
-    public UUID getUuid() {
+    public @NotNull UUID getUuid() {
         return uuid;
     }
 
-    @NotNull
-    public String getType() {
+    public @NotNull String getPlayerName() {
+        return playerName;
+    }
+
+    public @NotNull String getType() {
         return type;
     }
 
-    @NotNull
-    public String getAction() {
+    public @NotNull String getAction() {
         return action;
     }
 

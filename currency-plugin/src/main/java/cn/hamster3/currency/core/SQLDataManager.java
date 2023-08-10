@@ -57,12 +57,14 @@ public class SQLDataManager implements IDataManager {
                 ") CHARACTER SET = utf8mb4;");
         statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_logs(" +
                 "uuid VARCHAR(36) NOT NULL," +
+                "player_name VARCHAR(36) NOT NULL," +
                 "type VARCHAR(36) NOT NULL," +
                 "action VARCHAR(36) NOT NULL," +
                 "amount DOUBLE NOT NULL," +
                 "balance DOUBLE NOT NULL," +
                 "time DATETIME NOT NULL DEFAULT NOW()," +
-                "INDEX idx_uuid(uuid)" +
+                "INDEX idx_uuid(uuid)," +
+                "INDEX idx_name(player_name)" +
                 ") CHARACTER SET = utf8mb4;");
         statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_settings(" +
                 "title VARCHAR(64) PRIMARY KEY," +
@@ -307,13 +309,14 @@ public class SQLDataManager implements IDataManager {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try (Connection connection = dataSource.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(
-                        "INSERT INTO " + database + ".hamster_currency_logs VALUES(?, ?, ?, ?, ?, DEFAULT);"
+                        "INSERT INTO " + database + ".hamster_currency_logs VALUES(?, ?, ?, ?, ?, ?, DEFAULT);"
                 )) {
                     statement.setString(1, log.getUuid().toString());
-                    statement.setString(2, log.getType());
-                    statement.setString(3, log.getAction());
-                    statement.setDouble(4, log.getAmount());
-                    statement.setDouble(5, log.getBalance());
+                    statement.setString(2, log.getPlayerName());
+                    statement.setString(3, log.getType());
+                    statement.setString(4, log.getAction());
+                    statement.setDouble(5, log.getAmount());
+                    statement.setDouble(6, log.getBalance());
                     statement.executeUpdate();
                 }
             } catch (SQLException e) {

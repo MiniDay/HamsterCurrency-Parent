@@ -18,7 +18,7 @@ public class CurrencySetCommand extends CurrencyAdminSetCommand {
     @Override
     protected void doSet(PlayerData data, CurrencyType type, double amount) {
         data.setPlayerCurrency(type.getId(), amount);
-        dataManager.insertLog(new CurrencyLog(data.getUuid(), type.getId(), "set", amount, amount));
+        dataManager.insertLog(new CurrencyLog(data.getUuid(), data.getPlayerName(), type.getId(), "set", amount, amount));
     }
 
 }

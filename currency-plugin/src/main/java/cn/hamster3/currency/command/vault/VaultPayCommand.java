@@ -95,8 +95,8 @@ public class VaultPayCommand extends CommandManager {
         toData.setPlayerCurrency(type.getId(), toBalance);
         dataManager.savePlayerData(fromData);
         dataManager.savePlayerData(toData);
-        dataManager.insertLog(new CurrencyLog(fromData.getUuid(), type.getId(), "payOut", amount, fromBalance));
-        dataManager.insertLog(new CurrencyLog(toData.getUuid(), type.getId(), "payIn", amount, toBalance));
+        dataManager.insertLog(new CurrencyLog(fromData.getUuid(), fromData.getPlayerName(), type.getId(), "payOut", amount, fromBalance));
+        dataManager.insertLog(new CurrencyLog(toData.getUuid(), toData.getPlayerName(), type.getId(), "payIn", amount, toBalance));
         sender.sendMessage(
                 Message.paySuccess.toString()
                         .replace("%player%", toData.getPlayerName())

@@ -37,7 +37,7 @@ public class VaultEconomyHook extends AbstractEconomy {
         }
         data.setPlayerCurrency(type, balance);
         dataManager.savePlayerData(data);
-        dataManager.insertLog(new CurrencyLog(data.getUuid(), type, "add", amount, balance));
+        dataManager.insertLog(new CurrencyLog(data.getUuid(), data.getPlayerName(), type, "add", amount, balance));
         return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.SUCCESS, "");
     }
 
@@ -52,7 +52,7 @@ public class VaultEconomyHook extends AbstractEconomy {
         double balance = data.getPlayerCurrency(type) - amount;
         data.setPlayerCurrency(type, balance);
         dataManager.savePlayerData(data);
-        dataManager.insertLog(new CurrencyLog(data.getUuid(), type, "take", amount, balance));
+        dataManager.insertLog(new CurrencyLog(data.getUuid(), data.getPlayerName(), type, "take", amount, balance));
         return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.SUCCESS, "扣款成功");
     }
 
