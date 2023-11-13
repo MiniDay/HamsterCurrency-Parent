@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'cn.hamster3'
-version '2.1.1'
+version '2.1.2'
 
 repositories {
     maven {
@@ -18,7 +18,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '22.0.0'
     compileOnly "cn.hamster3:HamsterService-Bukkit:2.8.3-SNAPSHOT"
-    compileOnly "cn.hamster3:HamsterAPI:2.4.7-SNAPSHOT"
+    compileOnly "cn.hamster3:HamsterAPI:2.4.8-SNAPSHOT"
     compileOnly 'net.milkbowl.vault:VaultAPI:1.7'
     compileOnly "me.clip:placeholderapi:2.10.9"
 
@@ -34,7 +34,6 @@ processResources {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-    withJavadocJar()
     withSourcesJar()
 }
 
@@ -46,19 +45,6 @@ jar {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.compilerArgs << "-Xlint:unchecked"
-}
-
-javadoc {
-    options.quiet()
-    options.encoding = 'UTF-8'
-    options.addStringOption('Xdoclint:none', '-quiet')
-    options.links = [
-            "https://javadoc.io/doc/org.jetbrains/annotations/21.0.1",
-            'https://javadoc.io/doc/com.google.code.gson/gson/2.8.0',
-            'https://ci.dmulloy2.net/job/ProtocolLib/javadoc',
-            'http://milkbowl.github.io/VaultAPI',
-            'https://bukkit.windit.net/javadoc'
-    ]
 }
 
 publishing {
@@ -73,10 +59,7 @@ publishing {
 
     repositories {
         maven {
-            def releasesRepoUrl = 'https://maven.airgame.net/maven-releases/'
-            def snapshotsRepoUrl = 'https://maven.airgame.net/maven-snapshots/'
-
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            url = 'https://maven.airgame.net/maven-airgame/'
 
             credentials {
                 username maven_username

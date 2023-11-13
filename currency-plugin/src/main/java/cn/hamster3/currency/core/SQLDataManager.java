@@ -1,19 +1,19 @@
 package cn.hamster3.currency.core;
 
+import cn.hamster3.api.HamsterAPI;
 import cn.hamster3.currency.HamsterCurrency;
 import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.CurrencyType;
 import cn.hamster3.currency.data.PlayerData;
 import cn.hamster3.service.bukkit.api.ServiceMessageAPI;
 import com.google.gson.JsonParser;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.*;
@@ -25,7 +25,7 @@ public class SQLDataManager implements IDataManager {
     private final JsonParser parser;
 
     private final String database;
-    private final HikariDataSource dataSource;
+    private final DataSource datasource;
 
     private final HashSet<PlayerData> playerData;
     private final HashSet<CurrencyType> currencyTypes;
@@ -38,18 +38,9 @@ public class SQLDataManager implements IDataManager {
 
         ConfigurationSection datasourceConfig = FileManager.getPluginConfig().getConfigurationSection("datasource");
         database = datasourceConfig.getString("database");
-        HikariConfig hikariConfig = new HikariConfig();
+        datasource = HamsterAPI.getHikariDataSource(datasourceConfig);
 
-        hikariConfig.setDriverClassName(datasourceConfig.getString("driver"));
-        hikariConfig.setJdbcUrl(datasourceConfig.getString("url"));
-        hikariConfig.setUsername(datasourceConfig.getString("user"));
-        hikariConfig.setPassword(datasourceConfig.getString("password"));
-
-        hikariConfig.setMaximumPoolSize(10);
-        hikariConfig.setMinimumIdle(1);
-
-        dataSource = new HikariDataSource(hikariConfig);
-        Connection connection = dataSource.getConnection();
+        Connection connection = datasource.getConnection();
         Statement statement = connection.createStatement();
         statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_player_data(" +
                 "uuid VARCHAR(36) PRIMARY KEY," +
@@ -82,7 +73,7 @@ public class SQLDataManager implements IDataManager {
         getLogUtils().info("配置文件重载完成!");
         try {
             getLogUtils().info("将配置文件上传至数据库...");
-            Connection connection = dataSource.getConnection();
+            Connection connection = datasource.getConnection();
             Statement statement = connection.createStatement();
             String data = Base64.getEncoder().encodeToString(config.saveToString().getBytes(StandardCharsets.UTF_8));
             statement.executeUpdate(String.format(
@@ -104,7 +95,7 @@ public class SQLDataManager implements IDataManager {
     public void loadConfigFromSQL() {
         try {
             getLogUtils().info("从数据库中下载配置文件...");
-            Connection connection = dataSource.getConnection();
+            Connection connection = datasource.getConnection();
             Statement statement = connection.createStatement();
             ResultSet set = statement.executeQuery("SELECT * FROM " + database + ".hamster_currency_settings;");
             while (set.next()) {
@@ -156,7 +147,7 @@ public class SQLDataManager implements IDataManager {
             getLogUtils().info("玩家经济列名: %s", moneyCol);
             getLogUtils().info("导入至经济类型: %s", currencyType);
             try {
-                Connection connection = dataSource.getConnection();
+                Connection connection = datasource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet set = statement.executeQuery(String.format("SELECT * FROM %s.%s;", database, table));
                 synchronized (playerData) {
@@ -198,7 +189,7 @@ public class SQLDataManager implements IDataManager {
     public void onEnable() {
         getLogUtils().info("从数据库中读取玩家数据...");
         try {
-            Connection connection = dataSource.getConnection();
+            Connection connection = datasource.getConnection();
             Statement statement = connection.createStatement();
             ResultSet set = statement.executeQuery("SELECT * FROM " + database + ".hamster_currency_player_data;");
             synchronized (playerData) {
@@ -246,7 +237,7 @@ public class SQLDataManager implements IDataManager {
     @Override
     public void loadPlayerData(UUID uuid) {
         try {
-            Connection connection = dataSource.getConnection();
+            Connection connection = datasource.getConnection();
             Statement statement = connection.createStatement();
             ResultSet set = statement.executeQuery(String.format(
                     "SELECT * FROM " + database + ".hamster_currency_player_data WHERE uuid='%s';",
@@ -283,7 +274,7 @@ public class SQLDataManager implements IDataManager {
     public void savePlayerData(PlayerData data) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                Connection connection = dataSource.getConnection();
+                Connection connection = datasource.getConnection();
                 Statement statement = connection.createStatement();
                 statement.executeUpdate(String.format(
                         "REPLACE INTO " + database + ".hamster_currency_player_data VALUES('%s', '%s');",
@@ -307,7 +298,7 @@ public class SQLDataManager implements IDataManager {
     @Override
     public void insertLog(CurrencyLog log) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try (Connection connection = dataSource.getConnection()) {
+            try (Connection connection = datasource.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(
                         "INSERT INTO " + database + ".hamster_currency_logs VALUES(?, ?, ?, ?, ?, ?, DEFAULT);"
                 )) {
