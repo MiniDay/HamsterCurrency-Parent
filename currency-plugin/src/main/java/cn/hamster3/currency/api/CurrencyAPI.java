@@ -1,9 +1,11 @@
 package cn.hamster3.currency.api;
 
+import cn.hamster3.currency.HamsterCurrency;
 import cn.hamster3.currency.core.IDataManager;
 import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.CurrencyType;
 import cn.hamster3.currency.data.PlayerData;
+import cn.hamster3.currency.event.CurrencyChangeEvent;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.bukkit.Bukkit;
 
@@ -41,6 +43,8 @@ public abstract class CurrencyAPI {
         if (data == null) {
             return;
         }
+        CurrencyChangeEvent event = new CurrencyChangeEvent(uuid, currencyID, data.getPlayerCurrency(currencyID), amount);
+        Bukkit.getScheduler().runTaskAsynchronously(HamsterCurrency.getInstance(), () -> Bukkit.getPluginManager().callEvent(event));
         data.setPlayerCurrency(currencyID, amount);
         dataManager.savePlayerData(data);
         dataManager.insertLog(new CurrencyLog(uuid, data.getPlayerName(), currencyID, "set", amount, amount));
@@ -56,6 +60,8 @@ public abstract class CurrencyAPI {
             return;
         }
         double balance = data.getPlayerCurrency(currencyID) + amount;
+        CurrencyChangeEvent event = new CurrencyChangeEvent(uuid, currencyID, data.getPlayerCurrency(currencyID), balance);
+        Bukkit.getScheduler().runTaskAsynchronously(HamsterCurrency.getInstance(), () -> Bukkit.getPluginManager().callEvent(event));
         data.setPlayerCurrency(currencyID, balance);
         dataManager.savePlayerData(data);
         dataManager.insertLog(new CurrencyLog(uuid, data.getPlayerName(), currencyID, "add", amount, balance));
@@ -71,6 +77,8 @@ public abstract class CurrencyAPI {
             return;
         }
         double balance = data.getPlayerCurrency(currencyID) - amount;
+        CurrencyChangeEvent event = new CurrencyChangeEvent(uuid, currencyID, data.getPlayerCurrency(currencyID), balance);
+        Bukkit.getScheduler().runTaskAsynchronously(HamsterCurrency.getInstance(), () -> Bukkit.getPluginManager().callEvent(event));
         data.setPlayerCurrency(currencyID, balance);
         dataManager.savePlayerData(data);
         dataManager.insertLog(new CurrencyLog(uuid, data.getPlayerName(), currencyID, "take", amount, balance));

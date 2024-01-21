@@ -27,10 +27,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.SQLException;
 
 public final class HamsterCurrency extends JavaPlugin {
+    private static HamsterCurrency instance;
     private static LogUtils logUtils;
     private IDataManager dataManager;
     private CurrencyListener listener;
     private boolean loaded;
+
+    public static HamsterCurrency getInstance() {
+        return instance;
+    }
 
     public static LogUtils getLogUtils() {
         return logUtils;
@@ -38,6 +43,7 @@ public final class HamsterCurrency extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        instance = this;
         logUtils = new LogUtils(this);
         FileManager.reload(this);
         logUtils.infoDividingLine();

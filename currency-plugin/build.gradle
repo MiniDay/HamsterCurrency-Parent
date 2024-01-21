@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'cn.hamster3'
-version '2.1.2'
+version '2.2.0'
 
 repositories {
     maven {
@@ -53,7 +53,7 @@ publishing {
             artifactId = "HamsterCurrency"
             artifact jar
             artifact sourcesJar
-            artifact javadocJar
+            //artifact javadocJar
         }
     }
 
