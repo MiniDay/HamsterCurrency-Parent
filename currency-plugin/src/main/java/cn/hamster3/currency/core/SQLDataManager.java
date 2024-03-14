@@ -53,7 +53,7 @@ public class SQLDataManager implements IDataManager {
                 "action VARCHAR(36) NOT NULL," +
                 "amount DOUBLE NOT NULL," +
                 "balance DOUBLE NOT NULL," +
-                "time DATETIME NOT NULL DEFAULT NOW()," +
+                "time DATETIME NOT NULL," +
                 "INDEX idx_uuid(uuid)," +
                 "INDEX idx_name(player_name)" +
                 ") CHARACTER SET = utf8mb4;");
@@ -300,7 +300,7 @@ public class SQLDataManager implements IDataManager {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try (Connection connection = datasource.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(
-                        "INSERT INTO " + database + ".hamster_currency_logs VALUES(?, ?, ?, ?, ?, ?, DEFAULT);"
+                        "INSERT INTO " + database + ".hamster_currency_logs VALUES(?, ?, ?, ?, ?, ?, NOW());"
                 )) {
                     statement.setString(1, log.getUuid().toString());
                     statement.setString(2, log.getPlayerName());
