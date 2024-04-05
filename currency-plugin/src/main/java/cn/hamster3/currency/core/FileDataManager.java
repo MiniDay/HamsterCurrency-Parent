@@ -10,21 +10,19 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static cn.hamster3.currency.HamsterCurrency.getLogUtils;
 
 public class FileDataManager implements IDataManager {
     private final HamsterCurrency plugin;
-    private final HashSet<PlayerData> playerData;
+    private final Map<UUID, PlayerData> playerData;
     private final HashSet<CurrencyType> currencyTypes;
 
     public FileDataManager(HamsterCurrency plugin) {
         this.plugin = plugin;
-        playerData = new HashSet<>();
+        playerData = new ConcurrentHashMap<>();
         currencyTypes = new HashSet<>();
     }
 
@@ -42,7 +40,7 @@ public class FileDataManager implements IDataManager {
             for (File file : files) {
                 try {
                     PlayerData data = new PlayerData(YamlConfiguration.loadConfiguration(file));
-                    playerData.add(data);
+                    playerData.put(data.getUuid(), data);
                 } catch (Exception e) {
                     getLogUtils().error(e, "加载玩家存档文件 %s 时出现了一个异常!", file.getName());
                 }
@@ -54,7 +52,7 @@ public class FileDataManager implements IDataManager {
     @Override
     public void onDisable() {
         File dataFolder = new File(plugin.getDataFolder(), "PlayerData");
-        for (PlayerData data : playerData) {
+        for (PlayerData data : playerData.values()) {
             File dataFile = new File(dataFolder, data.getUuid().toString() + ".yml");
             try {
                 data.saveToConfig().save(dataFile);
@@ -99,7 +97,7 @@ public class FileDataManager implements IDataManager {
         // 只需要给没有存档的新玩家初始化一个存档数据即可
         PlayerData data = getPlayerData(uuid);
         if (data == null) {
-            playerData.add(new PlayerData(uuid));
+            playerData.put(uuid, new PlayerData(uuid));
         }
     }
 
@@ -116,23 +114,14 @@ public class FileDataManager implements IDataManager {
 
     @Override
     public PlayerData getPlayerData(UUID uuid) {
-        synchronized (playerData) {
-            for (PlayerData data : playerData) {
-                if (uuid.equals(data.getUuid())) {
-                    return data;
-                }
-            }
-        }
-        return null;
+        return playerData.get(uuid);
     }
 
     @Override
     public PlayerData getPlayerData(String name) {
-        synchronized (playerData) {
-            for (PlayerData data : playerData) {
-                if (name.equalsIgnoreCase(data.getPlayerName())) {
-                    return data;
-                }
+        for (PlayerData data : playerData.values()) {
+            if (name.equalsIgnoreCase(data.getPlayerName())) {
+                return data;
             }
         }
         return null;
@@ -140,9 +129,7 @@ public class FileDataManager implements IDataManager {
 
     @Override
     public ArrayList<PlayerData> getPlayerData() {
-        synchronized (playerData) {
-            return new ArrayList<>(playerData);
-        }
+        return new ArrayList<>(playerData.values());
     }
 
     @Override
