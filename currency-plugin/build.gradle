@@ -59,7 +59,7 @@ publishing {
 
     repositories {
         maven {
-            url = 'https://maven.airgame.net/maven-airgame/'
+            url = 'https://maven.airgame.net/public/'
 
             credentials {
                 username maven_username
