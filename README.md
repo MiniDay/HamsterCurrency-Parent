@@ -41,7 +41,7 @@
 <dependency>
     <groupId>cn.hamster3</groupId>
     <artifactId>HamsterCurrency</artifactId>
-    <version>2.0.9-SNAPSHOT</version>
+    <version>2.2.2</version>
 </dependency>
 ```
 
@@ -61,11 +61,10 @@ allprojects {
 
 ```groovy
 dependencies {
-    implementation 'cn.hamster3:HamsterCurrency:2.0.9-SNAPSHOT'
+    implementation 'cn.hamster3:HamsterCurrency:2.2.2'
 }
 ```
 
 ## API
 
-请参考[CurrencyAPI](/currency-plugin/src/main/java/cn/hamster3/currency/api/CurrencyAPI.java)
-
+请参考[CurrencyAPI](currency-plugin/src/main/java/cn/hamster3/currency/api/CurrencyAPI.java)
