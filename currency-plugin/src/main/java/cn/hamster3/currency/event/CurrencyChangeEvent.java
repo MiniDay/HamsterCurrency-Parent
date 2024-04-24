@@ -50,4 +50,14 @@ public class CurrencyChangeEvent extends Event {
     public HandlerList getHandlers() {
         return handlerList;
     }
+
+    @Override
+    public String toString() {
+        return "CurrencyChangeEvent{" +
+                "playerUUID=" + playerUUID +
+                ", currencyID='" + currencyID + '\'' +
+                ", oldAmount=" + oldAmount +
+                ", newAmount=" + newAmount +
+                '}';
+    }
 }
