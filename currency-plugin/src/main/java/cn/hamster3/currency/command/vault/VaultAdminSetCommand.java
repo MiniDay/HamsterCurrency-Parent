@@ -10,6 +10,7 @@ import cn.hamster3.currency.data.PlayerData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import java.util.Collections;
 import java.util.List;
 
 public abstract class VaultAdminSetCommand extends CommandExecutor {
@@ -79,8 +80,8 @@ public abstract class VaultAdminSetCommand extends CommandExecutor {
     @SuppressWarnings("DuplicatedCode")
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 2) {
-            return HamsterAPI.getOnlinePlayersName(args[0]);
+            return HamsterAPI.getOnlinePlayersName(args[1]);
         }
-        return null;
+        return Collections.emptyList();
     }
 }
