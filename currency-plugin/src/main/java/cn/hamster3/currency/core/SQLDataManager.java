@@ -44,24 +44,24 @@ public class SQLDataManager implements IDataManager {
         Connection connection = datasource.getConnection();
         Statement statement = connection.createStatement();
         statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_player_data(" +
-                "uuid VARCHAR(36) PRIMARY KEY," +
-                "data TEXT" +
-                ") CHARACTER SET = utf8mb4;");
+                          "uuid VARCHAR(36) PRIMARY KEY," +
+                          "data TEXT" +
+                          ") CHARACTER SET = utf8mb4;");
         statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_logs(" +
-                "uuid VARCHAR(36) NOT NULL," +
-                "player_name VARCHAR(36) NOT NULL," +
-                "type VARCHAR(36) NOT NULL," +
-                "action VARCHAR(36) NOT NULL," +
-                "amount DOUBLE NOT NULL," +
-                "balance DOUBLE NOT NULL," +
-                "time DATETIME NOT NULL," +
-                "INDEX idx_uuid(uuid)," +
-                "INDEX idx_name(player_name)" +
-                ") CHARACTER SET = utf8mb4;");
+                          "uuid VARCHAR(36) NOT NULL," +
+                          "player_name VARCHAR(36) NOT NULL," +
+                          "type VARCHAR(36) NOT NULL," +
+                          "action VARCHAR(36) NOT NULL," +
+                          "amount DOUBLE NOT NULL," +
+                          "balance DOUBLE NOT NULL," +
+                          "time DATETIME NOT NULL," +
+                          "INDEX idx_uuid(uuid)," +
+                          "INDEX idx_name(player_name)" +
+                          ") CHARACTER SET = utf8mb4;");
         statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_settings(" +
-                "title VARCHAR(64) PRIMARY KEY," +
-                "data TEXT" +
-                ") CHARACTER SET = utf8mb4;");
+                          "title VARCHAR(64) PRIMARY KEY," +
+                          "data TEXT" +
+                          ") CHARACTER SET = utf8mb4;");
 
         statement.close();
         connection.close();
@@ -313,7 +313,7 @@ public class SQLDataManager implements IDataManager {
 
     @Override
     public PlayerData getPlayerData(UUID uuid) {
-        return playerData.get(uuid);
+        return playerData.computeIfAbsent(uuid, PlayerData::new);
     }
 
     @Override

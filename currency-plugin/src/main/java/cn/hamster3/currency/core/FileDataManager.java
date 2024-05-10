@@ -114,7 +114,7 @@ public class FileDataManager implements IDataManager {
 
     @Override
     public PlayerData getPlayerData(UUID uuid) {
-        return playerData.get(uuid);
+        return playerData.computeIfAbsent(uuid, PlayerData::new);
     }
 
     @Override
