@@ -25,7 +25,6 @@ public class SQLDataManager implements IDataManager {
     private final HamsterCurrency plugin;
     private final JsonParser parser;
 
-    private final String database;
     private final DataSource datasource;
 
     private final Map<UUID, PlayerData> playerData;
@@ -38,16 +37,15 @@ public class SQLDataManager implements IDataManager {
         currencyTypes = new HashSet<>();
 
         ConfigurationSection datasourceConfig = FileManager.getPluginConfig().getConfigurationSection("datasource");
-        database = datasourceConfig.getString("database");
         datasource = HamsterAPI.getHikariDataSource(datasourceConfig);
 
         Connection connection = datasource.getConnection();
         Statement statement = connection.createStatement();
-        statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_player_data(" +
+        statement.execute("CREATE TABLE IF NOT EXISTS hamster_currency_player_data(" +
                           "uuid VARCHAR(36) PRIMARY KEY," +
                           "data TEXT" +
                           ") CHARACTER SET = utf8mb4;");
-        statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_logs(" +
+        statement.execute("CREATE TABLE IF NOT EXISTS hamster_currency_logs(" +
                           "uuid VARCHAR(36) NOT NULL," +
                           "player_name VARCHAR(36) NOT NULL," +
                           "type VARCHAR(36) NOT NULL," +
@@ -58,7 +56,7 @@ public class SQLDataManager implements IDataManager {
                           "INDEX idx_uuid(uuid)," +
                           "INDEX idx_name(player_name)" +
                           ") CHARACTER SET = utf8mb4;");
-        statement.execute("CREATE TABLE IF NOT EXISTS " + database + ".hamster_currency_settings(" +
+        statement.execute("CREATE TABLE IF NOT EXISTS hamster_currency_settings(" +
                           "title VARCHAR(64) PRIMARY KEY," +
                           "data TEXT" +
                           ") CHARACTER SET = utf8mb4;");
@@ -78,7 +76,7 @@ public class SQLDataManager implements IDataManager {
             Statement statement = connection.createStatement();
             String data = Base64.getEncoder().encodeToString(config.saveToString().getBytes(StandardCharsets.UTF_8));
             statement.executeUpdate(String.format(
-                    "REPLACE INTO " + database + ".hamster_currency_settings VALUES('%s', '%s');",
+                    "REPLACE INTO hamster_currency_settings VALUES('%s', '%s');",
                     "pluginConfig",
                     data
             ));
@@ -98,7 +96,7 @@ public class SQLDataManager implements IDataManager {
             getLogUtils().info("从数据库中下载配置文件...");
             Connection connection = datasource.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet set = statement.executeQuery("SELECT * FROM " + database + ".hamster_currency_settings;");
+            ResultSet set = statement.executeQuery("SELECT * FROM hamster_currency_settings;");
             while (set.next()) {
                 String title = set.getString("title");
                 String data = new String(Base64.getDecoder().decode(set.getString("data")), StandardCharsets.UTF_8);
@@ -190,7 +188,7 @@ public class SQLDataManager implements IDataManager {
         try {
             Connection connection = datasource.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet set = statement.executeQuery("SELECT * FROM " + database + ".hamster_currency_player_data;");
+            ResultSet set = statement.executeQuery("SELECT * FROM hamster_currency_player_data;");
             while (set.next()) {
                 String uuid = set.getString("uuid");
                 String string = set.getString("data");
@@ -237,7 +235,7 @@ public class SQLDataManager implements IDataManager {
             Connection connection = datasource.getConnection();
             Statement statement = connection.createStatement();
             ResultSet set = statement.executeQuery(String.format(
-                    "SELECT * FROM " + database + ".hamster_currency_player_data WHERE uuid='%s';",
+                    "SELECT * FROM hamster_currency_player_data WHERE uuid='%s';",
                     uuid
             ));
             PlayerData data;
@@ -272,7 +270,7 @@ public class SQLDataManager implements IDataManager {
                 Connection connection = datasource.getConnection();
                 Statement statement = connection.createStatement();
                 statement.executeUpdate(String.format(
-                        "REPLACE INTO " + database + ".hamster_currency_player_data VALUES('%s', '%s');",
+                        "REPLACE INTO hamster_currency_player_data VALUES('%s', '%s');",
                         data.getUuid().toString(),
                         data.saveToJson().toString()
                 ));
@@ -295,7 +293,7 @@ public class SQLDataManager implements IDataManager {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try (Connection connection = datasource.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(
-                        "INSERT INTO " + database + ".hamster_currency_logs VALUES(?, ?, ?, ?, ?, ?, NOW());"
+                        "INSERT INTO hamster_currency_logs VALUES(?, ?, ?, ?, ?, ?, NOW());"
                 )) {
                     statement.setString(1, log.getUuid().toString());
                     statement.setString(2, log.getPlayerName());

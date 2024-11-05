@@ -72,7 +72,7 @@ public class VaultEconomyHook extends AbstractEconomy {
         if (data == null) {
             return false;
         }
-        return data.getPlayerCurrency(FileManager.getVaultCurrencyType()) >= amount;
+        return getBalance(data) >= amount;
     }
 
     private double getBalance(PlayerData data) {

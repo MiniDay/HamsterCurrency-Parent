@@ -23,6 +23,10 @@ public class VaultEconomySeeEvent extends Event {
         this.result = result;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlerList;
+    }
+
     public @NotNull UUID getUuid() {
         return uuid;
     }
