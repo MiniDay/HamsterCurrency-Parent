@@ -5,21 +5,21 @@ import cn.hamster3.currency.core.IDataManager;
 import cn.hamster3.currency.core.Message;
 import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.PlayerData;
+import cn.hamster3.currency.event.vault.VaultEconomyGiveEvent;
+import cn.hamster3.currency.event.vault.VaultEconomySeeEvent;
+import cn.hamster3.currency.event.vault.VaultEconomyTakeEvent;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class VaultEconomyHook extends AbstractEconomy {
-    private static final EconomyResponse NOT_IMPLEMENTED_RESPONSE =
-            new EconomyResponse(
-                    0,
-                    0,
-                    EconomyResponse.ResponseType.NOT_IMPLEMENTED,
-                    "HamsterCurrency未实现该功能~"
-            );
+    private static final EconomyResponse NOT_IMPLEMENTED_RESPONSE = new EconomyResponse(
+            0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "HamsterCurrency未实现该功能~"
+    );
     private final IDataManager dataManager;
 
     public VaultEconomyHook(IDataManager dataManager) {
@@ -31,6 +31,12 @@ public class VaultEconomyHook extends AbstractEconomy {
             return new EconomyResponse(amount, 0, EconomyResponse.ResponseType.FAILURE, "玩家账户不存在");
         }
         String type = FileManager.getVaultCurrencyType();
+        VaultEconomyGiveEvent event = new VaultEconomyGiveEvent(data.getUuid(), type, amount);
+        Bukkit.getPluginManager().callEvent(event);
+        amount = event.getAmount();
+        if (amount == 0) {
+            return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.SUCCESS, null);
+        }
         double balance = data.getPlayerCurrency(type) + amount;
         if (data.getPlayerCurrency(type) > 0 && balance < 0) {
             return new EconomyResponse(amount, 0, EconomyResponse.ResponseType.FAILURE, "玩家金额超出上限");
@@ -38,7 +44,7 @@ public class VaultEconomyHook extends AbstractEconomy {
         data.setPlayerCurrency(type, balance);
         dataManager.savePlayerData(data);
         dataManager.insertLog(new CurrencyLog(data.getUuid(), data.getPlayerName(), type, "add", amount, balance));
-        return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.SUCCESS, "");
+        return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.SUCCESS, null);
     }
 
     protected EconomyResponse withdrawPlayer(PlayerData data, double amount) {
@@ -46,6 +52,12 @@ public class VaultEconomyHook extends AbstractEconomy {
             return new EconomyResponse(amount, 0, EconomyResponse.ResponseType.FAILURE, "玩家账户不存在");
         }
         String type = FileManager.getVaultCurrencyType();
+        VaultEconomyTakeEvent event = new VaultEconomyTakeEvent(data.getUuid(), type, amount);
+        Bukkit.getPluginManager().callEvent(event);
+        amount = event.getAmount();
+        if (amount == 0) {
+            return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.SUCCESS, null);
+        }
         if (data.getPlayerCurrency(type) < amount) {
             return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.FAILURE, "余额不足");
         }
@@ -53,7 +65,7 @@ public class VaultEconomyHook extends AbstractEconomy {
         data.setPlayerCurrency(type, balance);
         dataManager.savePlayerData(data);
         dataManager.insertLog(new CurrencyLog(data.getUuid(), data.getPlayerName(), type, "take", amount, balance));
-        return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.SUCCESS, "扣款成功");
+        return new EconomyResponse(amount, data.getPlayerCurrency(type), EconomyResponse.ResponseType.SUCCESS, null);
     }
 
     private boolean has(PlayerData data, double amount) {
@@ -67,7 +79,10 @@ public class VaultEconomyHook extends AbstractEconomy {
         if (data == null) {
             return 0;
         }
-        return data.getPlayerCurrency(FileManager.getVaultCurrencyType());
+        double currency = data.getPlayerCurrency(FileManager.getVaultCurrencyType());
+        VaultEconomySeeEvent event = new VaultEconomySeeEvent(data.getUuid(), FileManager.getVaultCurrencyType(), currency);
+        Bukkit.getPluginManager().callEvent(event);
+        return event.getResult();
     }
 
     @Override
