@@ -167,7 +167,7 @@ public class SQLDataManager implements IDataManager {
                 }
                 for (PlayerData data : playerData.values()) {
                     statement.executeUpdate(String.format(
-                            "REPLACE INTO " + database + ".hamster_currency_player_data VALUES('%s', '%s');",
+                            "REPLACE INTO hamster_currency_player_data VALUES('%s', '%s');",
                             data.getUuid().toString(),
                             data.saveToJson().toString()
                     ));
