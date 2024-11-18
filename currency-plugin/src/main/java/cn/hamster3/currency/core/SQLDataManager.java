@@ -158,9 +158,11 @@ public class SQLDataManager implements IDataManager {
                         if (data == null) {
                             data = new PlayerData(uuid, name);
                             playerData.put(data.getUuid(), data);
+                        }else {
+                            data.setPlayerName(name);
                         }
                         data.setPlayerCurrency(currencyType, money);
-                        getLogUtils().info("已从其他插件中加载了玩家 %s 的存档数据.", data.getUuid());
+                        getLogUtils().info("已从其他插件中加载了玩家 %s(%s) 的存档数据.", uuid, name);
                     } catch (Exception e) {
                         getLogUtils().error(e, "导入某一条数据时发生了一个错误: ");
                     }
@@ -311,7 +313,7 @@ public class SQLDataManager implements IDataManager {
 
     @Override
     public PlayerData getPlayerData(UUID uuid) {
-        return playerData.computeIfAbsent(uuid, PlayerData::new);
+        return playerData.get(uuid);
     }
 
     @Override

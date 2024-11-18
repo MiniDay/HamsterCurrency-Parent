@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class PlayerData {
     private final UUID uuid;
-    private final String playerName;
+    private String playerName;
     private final HashMap<String, Double> playerCurrencies;
 
     public PlayerData(UUID uuid) {
@@ -31,7 +31,7 @@ public class PlayerData {
 
     public PlayerData(JsonObject object) {
         uuid = UUID.fromString(object.get("uuid").getAsString());
-        if (object.has("playerName")) {
+        if (object.has("playerName") && !object.get("playerName").isJsonNull()) {
             playerName = object.get("playerName").getAsString();
         } else {
             playerName = ServiceInfoAPI.getPlayerInfo(uuid).getPlayerName();
@@ -89,6 +89,10 @@ public class PlayerData {
 
     public String getPlayerName() {
         return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
     public void setPlayerCurrency(String type, double amount) {
