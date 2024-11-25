@@ -43,6 +43,9 @@ public class SQLListener extends CurrencyListener {
                 break;
             }
             case "savedPlayerData": {
+                if (ServiceInfoAPI.getLocalServerName().equals(info.getSenderInfo().getName())) {
+                    return;
+                }
                 if (ServiceInfoAPI.getLocalSenderInfo().equals(info.getSenderInfo())) {
                     return;
                 }
