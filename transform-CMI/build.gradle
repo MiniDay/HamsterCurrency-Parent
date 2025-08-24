@@ -40,5 +40,5 @@ jar {
             rootProject.file("LICENSE")
     ])
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-    destinationDir(rootProject.buildDir)
+    destinationDirectory = rootProject.layout.buildDirectory
 }

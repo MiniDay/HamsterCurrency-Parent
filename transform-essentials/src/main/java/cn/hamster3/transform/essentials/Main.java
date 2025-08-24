@@ -60,9 +60,9 @@ public class Main {
         statement.execute(String.format("USE %s;", database));
         System.out.println("检查数据表...");
         statement.execute("CREATE TABLE IF NOT EXISTS hamster_currency_player_data(" +
-                "uuid VARCHAR(36) PRIMARY KEY," +
-                "data TEXT" +
-                ");");
+                          "uuid VARCHAR(36) PRIMARY KEY," +
+                          "data TEXT" +
+                          ");");
         System.out.println("开始更新数据库...");
         for (PlayerData data : playerData) {
             String sql = String.format(

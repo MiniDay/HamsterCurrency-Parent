@@ -14,8 +14,8 @@ import java.util.UUID;
 
 public class PlayerData {
     private final UUID uuid;
-    private String playerName;
     private final HashMap<String, Double> playerCurrencies;
+    private String playerName;
 
     public PlayerData(UUID uuid) {
         this.uuid = uuid;

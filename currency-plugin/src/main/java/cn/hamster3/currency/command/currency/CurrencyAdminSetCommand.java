@@ -81,7 +81,6 @@ public abstract class CurrencyAdminSetCommand extends CommandExecutor {
                         .replace("%type%", type.getId())
                         .replace("%amount%", String.format("%.2f", data.getPlayerCurrency(type.getId())))
         );
-        dataManager.savePlayerData(data);
         return true;
     }
 

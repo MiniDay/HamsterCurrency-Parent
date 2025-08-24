@@ -19,5 +19,4 @@ public class CurrencySetCommand extends CurrencyAdminSetCommand {
     protected void doSet(PlayerData data, CurrencyType type, double amount) {
         CurrencyAPI.setPlayerCurrency(data.getUuid(), type.getId(), amount);
     }
-
 }

@@ -2,10 +2,10 @@ package cn.hamster3.currency.command.vault;
 
 import cn.hamster3.api.HamsterAPI;
 import cn.hamster3.api.command.CommandManager;
+import cn.hamster3.currency.api.CurrencyAPI;
 import cn.hamster3.currency.core.FileManager;
 import cn.hamster3.currency.core.IDataManager;
 import cn.hamster3.currency.core.Message;
-import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.CurrencyType;
 import cn.hamster3.currency.data.PlayerData;
 import cn.hamster3.service.bukkit.api.ServiceMessageAPI;
@@ -79,24 +79,16 @@ public class VaultPayCommand extends CommandManager {
             sender.sendMessage(Message.amountNumberError.toString());
             return true;
         }
-
         Player player = (Player) sender;
-        PlayerData fromData = dataManager.getPlayerData(player.getUniqueId());
-        if (fromData.getPlayerCurrency(type.getId()) < amount) {
+        if (!CurrencyAPI.hasPlayerCurrency(player.getUniqueId(), type.getId(), amount)) {
             sender.sendMessage(
                     Message.currencyNotEnough.toString()
                             .replace("%type%", type.getId())
             );
             return true;
         }
-        double fromBalance = fromData.getPlayerCurrency(type.getId()) - amount;
-        fromData.setPlayerCurrency(type.getId(), fromBalance);
-        double toBalance = toData.getPlayerCurrency(type.getId()) + amount;
-        toData.setPlayerCurrency(type.getId(), toBalance);
-        dataManager.savePlayerData(fromData);
-        dataManager.savePlayerData(toData);
-        dataManager.insertLog(new CurrencyLog(fromData.getUuid(), fromData.getPlayerName(), type.getId(), "payOut", amount, fromBalance));
-        dataManager.insertLog(new CurrencyLog(toData.getUuid(), toData.getPlayerName(), type.getId(), "payIn", amount, toBalance));
+        CurrencyAPI.takePlayerCurrency(player.getUniqueId(), type.getId(), amount);
+        CurrencyAPI.addPlayerCurrency(toData.getUuid(), type.getId(), amount);
         sender.sendMessage(
                 Message.paySuccess.toString()
                         .replace("%player%", toData.getPlayerName())

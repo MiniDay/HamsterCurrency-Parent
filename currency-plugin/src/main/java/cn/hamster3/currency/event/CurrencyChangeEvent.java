@@ -54,10 +54,10 @@ public class CurrencyChangeEvent extends Event {
     @Override
     public String toString() {
         return "CurrencyChangeEvent{" +
-                "playerUUID=" + playerUUID +
-                ", currencyID='" + currencyID + '\'' +
-                ", oldAmount=" + oldAmount +
-                ", newAmount=" + newAmount +
-                '}';
+               "playerUUID=" + playerUUID +
+               ", currencyID='" + currencyID + '\'' +
+               ", oldAmount=" + oldAmount +
+               ", newAmount=" + newAmount +
+               '}';
     }
 }

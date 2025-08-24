@@ -1,7 +1,7 @@
 package cn.hamster3.currency.command.currency;
 
+import cn.hamster3.currency.api.CurrencyAPI;
 import cn.hamster3.currency.core.IDataManager;
-import cn.hamster3.currency.data.CurrencyLog;
 import cn.hamster3.currency.data.CurrencyType;
 import cn.hamster3.currency.data.PlayerData;
 
@@ -17,8 +17,6 @@ public class CurrencyTakeCommand extends CurrencyAdminSetCommand {
 
     @Override
     protected void doSet(PlayerData data, CurrencyType type, double amount) {
-        double balance = data.getPlayerCurrency(type.getId()) - amount;
-        data.setPlayerCurrency(type.getId(), balance);
-        dataManager.insertLog(new CurrencyLog(data.getUuid(), data.getPlayerName(), type.getId(), "take", amount, balance));
+        CurrencyAPI.takePlayerCurrency(data.getUuid(), type.getId(), amount);
     }
 }

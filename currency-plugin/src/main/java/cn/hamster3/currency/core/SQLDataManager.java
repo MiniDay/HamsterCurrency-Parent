@@ -158,7 +158,7 @@ public class SQLDataManager implements IDataManager {
                         if (data == null) {
                             data = new PlayerData(uuid, name);
                             playerData.put(data.getUuid(), data);
-                        }else {
+                        } else {
                             data.setPlayerName(name);
                         }
                         data.setPlayerCurrency(currencyType, money);

@@ -67,12 +67,6 @@ public abstract class VaultAdminSetCommand extends CommandExecutor {
         }
         doSet(data, type, amount);
         dataManager.savePlayerData(data);
-        sender.sendMessage(
-                Message.seeCurrency.toString()
-                        .replace("%player%", data.getPlayerName())
-                        .replace("%type%", type.getId())
-                        .replace("%amount%", String.format("%.2f", data.getPlayerCurrency(type.getId())))
-        );
         return true;
     }
 
